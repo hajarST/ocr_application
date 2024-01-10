@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                   Padding(
                     padding: const EdgeInsets.all(60.0),
                     child: Image.asset(
-                      "assets/images/ocr_image.png",
+                      "assets/images/ocr_image.jpeg",
                       fit: BoxFit.contain,
                     ),
                   ),

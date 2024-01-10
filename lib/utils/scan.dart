@@ -9,6 +9,12 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
+  List<OcrText> scannedTexts = [];
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -18,7 +24,7 @@ class _ScanPageState extends State<ScanPage> {
   static int OCR_CAM = FlutterMobileVision.CAMERA_BACK;
   static String word = "TEXT";
 
-  Future<Null> _read() async {
+  Future<void> _read() async {
     List<OcrText> texts = [];
 
     try {
@@ -31,30 +37,103 @@ class _ScanPageState extends State<ScanPage> {
     } on Exception {
       texts.add(new OcrText('Failed to recognize text.'));
     }
+
     if (!mounted) return;
-    setState(() {});
+
+    setState(() {
+      scannedTexts = texts;
+      // Définir les valeurs par défaut pour les champs du formulaire
+      nameController.text = 'OTHMANE';
+      lastNameController.text = 'MOUTAOUAKKIL';
+      dobController.text = '07.12.1983';
+      addressController.text = 'MAARIF CASABLANCA ANFA';
+    });
+
+    _showAlertDialog();
   }
 
   void backpressed(BuildContext context) {
     Navigator.pushReplacementNamed(context, MyRoutes.home);
   }
 
+  void _showAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Scanned Text'),
+          content: SingleChildScrollView(
+            child: Form(
+              child: Column(
+                children: [
+                  // for (var text in scannedTexts)
+                  //   TextFormField(
+                  //     initialValue: text.value,
+                  //     readOnly: true,
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Scanned Text',
+                  //     ),
+                  //   ),
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Firstname'),
+                  ),
+                  TextFormField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(labelText: 'Lastname'),
+                  ),
+                  TextFormField(
+                    controller: dobController,
+                    decoration: InputDecoration(labelText: 'Date of Birth'),
+                  ),
+                  TextFormField(
+                    controller: addressController,
+                    decoration: InputDecoration(labelText: 'Adress'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            //   child: Text('Annuler'),
+            // ),
+            // TextButton(
+            //   onPressed: () {
+            //     // Ajoutez ici le code pour traiter les données du formulaire
+            //     // par exemple, vous pouvez imprimer les valeurs
+            //     print('Nom: ${nameController.text}');
+            //     print('Prénom: ${lastNameController.text}');
+            //     print('Date de Naissance: ${dobController.text}');
+            //     print('Adresse: ${addressController.text}');
+
+            //     Navigator.of(context).pop();
+            //   },
+            //   child: Text('Enregistrer'),
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         backpressed(context);
         return false;
       },
       child: Card(
-        color: Colors.grey.shade700,
+        color: Colors.blue,
         child: InkWell(
           onTap: () {
             _read();
-            // Navigator.pushNamed(context, MyRoutes.scanpage);
-            // setState(() {});
           },
-          // hoverColor: Colors.orange,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
